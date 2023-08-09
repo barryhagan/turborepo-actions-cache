@@ -1,11 +1,16 @@
-name: 'Your name here'
-description: 'Provide a description here'
+name: 'turborepo-actions-cache'
+description: 'Run a local TurboRepo server backed by GitHub Actions cache files'
 author: 'Your name or organization here'
 inputs:
-  milliseconds: # change this
-    required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  cache-prefix:
+    required: false
+    description: 'prefix of cache entries'
+    default: 'turborepo_'
+  port:
+    required: false
+    description: 'port of the local TurboRepo server'
+    default: '9081'
 runs:
-  using: 'node18'
-  main: 'dist/index.js'
+  using: 'node16'
+  main: 'dist/main/index.js'
+  post: 'dist/post/index.js'

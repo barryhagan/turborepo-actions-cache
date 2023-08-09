@@ -7,6 +7,7 @@ import {
   TURBO_LOCAL_SERVER_PID,
   cacheDir,
   cacheItemPrefix,
+  serverLogFile,
   serverPort,
   turboToken
 } from './settings'
@@ -21,8 +22,8 @@ async function run(): Promise<void> {
 
   fs.ensureDirSync(cacheDir)
 
-  const out = fs.openSync(path.join(cacheDir, 'out.log'), 'a')
-  const err = fs.openSync(path.join(cacheDir, 'out.log'), 'a')
+  const out = fs.openSync(serverLogFile, 'a')
+  const err = fs.openSync(serverLogFile, 'a')
 
   exportVariable('TURBO_API', `http://localhost:${serverPort}`)
   exportVariable('TURBO_TOKEN', turboToken)

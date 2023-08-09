@@ -105,5 +105,6 @@ async function startServer(): Promise<void> {
 
 // eslint-disable-next-line github/no-then
 startServer().catch(error => {
+  console.log(error)
   setFailed(error)
 })

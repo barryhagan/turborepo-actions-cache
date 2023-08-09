@@ -15,3 +15,8 @@ export const cacheDir = path.join(
   process.env.RUNNER_TEMP || os.tmpdir(),
   'turborepo_cache'
 )
+
+export const serverLogFile = path.join(
+  os.tmpdir(),
+  'turborepo_cache_server.log'
+)

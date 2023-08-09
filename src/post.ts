@@ -1,5 +1,6 @@
 import {getState, info, setFailed} from '@actions/core'
-import {TURBO_LOCAL_SERVER_PID} from './settings'
+import {TURBO_LOCAL_SERVER_PID, serverLogFile} from './settings'
+import fs from 'fs-extra'
 
 function pidIsRunning(pid: string): boolean {
   try {
@@ -23,6 +24,9 @@ function stopServer(): void {
   } else {
     info(`Server with pid: ${serverPID} is not running.`)
   }
+
+  info('Server log:')
+  info(fs.readFileSync(serverLogFile, {encoding: 'utf8', flag: 'r'}))
 }
 
 try {

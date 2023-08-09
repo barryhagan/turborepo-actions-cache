@@ -37499,8 +37499,8 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`Using cache location ${settings_1.cacheDir} and prefix ${settings_1.cacheItemPrefix}`);
         fs_extra_1.default.ensureDirSync(settings_1.cacheDir);
-        const out = fs_extra_1.default.openSync(path_1.default.join(settings_1.cacheDir, 'out.log'), 'a');
-        const err = fs_extra_1.default.openSync(path_1.default.join(settings_1.cacheDir, 'out.log'), 'a');
+        const out = fs_extra_1.default.openSync(settings_1.serverLogFile, 'a');
+        const err = fs_extra_1.default.openSync(settings_1.serverLogFile, 'a');
         exportVariable('TURBO_API', `http://localhost:${settings_1.serverPort}`);
         exportVariable('TURBO_TOKEN', settings_1.turboToken);
         exportVariable('TURBO_TEAM', 'turborepo-actions-cache');
@@ -37538,7 +37538,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.cacheDir = exports.cacheItemPrefix = exports.serverPort = exports.turboToken = exports.TURBO_LOCAL_SERVER_PID = void 0;
+exports.serverLogFile = exports.cacheDir = exports.cacheItemPrefix = exports.serverPort = exports.turboToken = exports.TURBO_LOCAL_SERVER_PID = void 0;
 const core_1 = __nccwpck_require__(2186);
 const crypto_1 = __importDefault(__nccwpck_require__(6113));
 const path_1 = __importDefault(__nccwpck_require__(1017));
@@ -37548,6 +37548,7 @@ exports.turboToken = crypto_1.default.randomUUID();
 exports.serverPort = Number((0, core_1.getInput)('port') || '9081');
 exports.cacheItemPrefix = (0, core_1.getInput)('cache-prefix') || 'turborepo_';
 exports.cacheDir = path_1.default.join(process.env.RUNNER_TEMP || os_1.default.tmpdir(), 'turborepo_cache');
+exports.serverLogFile = path_1.default.join(os_1.default.tmpdir(), 'turborepo_cache_server.log');
 
 
 /***/ }),

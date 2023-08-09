@@ -85138,6 +85138,7 @@ function startServer() {
 }
 // eslint-disable-next-line github/no-then
 startServer().catch(error => {
+    console.log(error);
     (0, core_1.setFailed)(error);
 });
 
@@ -85153,7 +85154,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.cacheDir = exports.cacheItemPrefix = exports.serverPort = exports.turboToken = exports.TURBO_LOCAL_SERVER_PID = void 0;
+exports.serverLogFile = exports.cacheDir = exports.cacheItemPrefix = exports.serverPort = exports.turboToken = exports.TURBO_LOCAL_SERVER_PID = void 0;
 const core_1 = __nccwpck_require__(2186);
 const crypto_1 = __importDefault(__nccwpck_require__(6113));
 const path_1 = __importDefault(__nccwpck_require__(1017));
@@ -85163,6 +85164,7 @@ exports.turboToken = crypto_1.default.randomUUID();
 exports.serverPort = Number((0, core_1.getInput)('port') || '9081');
 exports.cacheItemPrefix = (0, core_1.getInput)('cache-prefix') || 'turborepo_';
 exports.cacheDir = path_1.default.join(process.env.RUNNER_TEMP || os_1.default.tmpdir(), 'turborepo_cache');
+exports.serverLogFile = path_1.default.join(os_1.default.tmpdir(), 'turborepo_cache_server.log');
 
 
 /***/ }),

@@ -37507,20 +37507,20 @@ function run() {
         const serverProcess = (0, child_process_1.spawn)('node', [path_1.default.resolve(__dirname, '../server/index.js')], {
             detached: true,
             stdio: ['ignore', out, err],
-            env: process.env
+            env: process.env,
         });
         serverProcess.unref();
         core.info(`${settings_1.TURBO_LOCAL_SERVER_PID}: ${serverProcess.pid}`);
         core.saveState(settings_1.TURBO_LOCAL_SERVER_PID, serverProcess.pid);
         yield (0, wait_on_1.default)({
             resources: [`http-get://localhost:${settings_1.serverPort}`],
-            timeout: 10000
+            timeout: 10000,
         });
         core.info('Turbo cache server is up and running.');
     });
 }
 // eslint-disable-next-line github/no-then
-run().catch(error => {
+run().catch((error) => {
     if (error instanceof Error) {
         core.setFailed(error.message);
     }

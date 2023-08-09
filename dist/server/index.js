@@ -85072,7 +85072,7 @@ const handleAsync = (handler) => {
 const getCacheConfig = (artifactId) => {
     return {
         cacheKey: `${settings_1.cacheItemPrefix}${artifactId}`,
-        filePath: path_1.default.join(settings_1.cacheDir, `${artifactId}.gz`)
+        filePath: path_1.default.join(settings_1.cacheDir, `${artifactId}.gz`),
     };
 };
 function startServer() {
@@ -85117,7 +85117,7 @@ function startServer() {
             readStream.on('open', () => {
                 readStream.pipe(res);
             });
-            readStream.on('error', err => {
+            readStream.on('error', (err) => {
                 console.error(err);
                 res.status(500).send('ERROR');
             });
@@ -85143,7 +85143,7 @@ function startServer() {
     });
 }
 // eslint-disable-next-line github/no-then
-startServer().catch(error => {
+startServer().catch((error) => {
     console.log(error);
     (0, core_1.setFailed)(error);
 });

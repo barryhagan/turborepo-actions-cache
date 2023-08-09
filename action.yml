@@ -1,6 +1,6 @@
 name: 'turborepo-actions-cache'
 description: 'Run a local TurboRepo server backed by GitHub Actions cache files'
-author: 'Your name or organization here'
+author: 'Barry Hagan'
 inputs:
   cache-prefix:
     required: false

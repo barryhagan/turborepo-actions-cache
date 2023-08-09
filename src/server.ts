@@ -75,13 +75,15 @@ async function startServer(): Promise<void> {
         }
       }
 
-      try {
-        const readStream = fs.createReadStream(filePath)
-        await pipeline(readStream, res)
-      } catch (error) {
-        console.error(error)
-        res.end(error)
-      }
+      const readStream = fs.createReadStream(filePath)
+      readStream.on('open', () => {
+        readStream.pipe(res)
+      })
+
+      readStream.on('error', err => {
+        console.error(err)
+        res.status(500).send('ERROR')
+      })
     })
   )
 

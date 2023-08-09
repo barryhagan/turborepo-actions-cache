@@ -85113,14 +85113,14 @@ function startServer() {
                     res.status(500).send('ERROR');
                 }
             }
-            try {
-                const readStream = fs_extra_1.default.createReadStream(filePath);
-                yield (0, promises_1.pipeline)(readStream, res);
-            }
-            catch (error) {
-                console.error(error);
-                res.end(error);
-            }
+            const readStream = fs_extra_1.default.createReadStream(filePath);
+            readStream.on('open', () => {
+                readStream.pipe(res);
+            });
+            readStream.on('error', err => {
+                console.error(err);
+                res.status(500).send('ERROR');
+            });
         })));
         app.put('/v8/artifacts/:artifactId', handleAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
             const artifactId = req.params.artifactId;

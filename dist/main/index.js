@@ -37504,7 +37504,7 @@ function run() {
         exportVariable('TURBO_API', `http://localhost:${settings_1.serverPort}`);
         exportVariable('TURBO_TOKEN', settings_1.turboToken);
         exportVariable('TURBO_TEAM', 'turborepo-actions-cache');
-        const serverProcess = (0, child_process_1.spawn)('node', [path_1.default.resolve(__dirname, 'server.js')], {
+        const serverProcess = (0, child_process_1.spawn)('node', [path_1.default.resolve(__dirname, '../server/index.js')], {
             detached: true,
             stdio: ['ignore', out, err],
             env: process.env

@@ -1,19 +1,58 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import {spawn} from 'child_process'
+import path from 'path'
+import fs from 'fs-extra'
+import waitOn from 'wait-on'
+import {
+  TURBO_LOCAL_SERVER_PID,
+  cacheDir,
+  cacheItemPrefix,
+  serverPort,
+  turboToken
+} from './settings'
 
-async function run(): Promise<void> {
-  try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
-
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
-  } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
-  }
+function exportVariable(name: string, value: string): void {
+  core.exportVariable(name, value)
+  core.info(`  ${name}=${value}`)
 }
 
-run()
+async function run(): Promise<void> {
+  core.debug(`Using cache location ${cacheDir} and prefix ${cacheItemPrefix}`)
+
+  fs.ensureDirSync(cacheDir)
+
+  const out = fs.openSync(path.join(cacheDir, 'out.log'), 'a')
+  const err = fs.openSync(path.join(cacheDir, 'out.log'), 'a')
+
+  exportVariable('TURBO_API', `http://localhost:${serverPort}`)
+  exportVariable('TURBO_TOKEN', turboToken)
+  exportVariable('TURBO_TEAM', 'turborepo-actions-cache')
+
+  const serverProcess = spawn(
+    'node',
+    [path.resolve(__dirname, '../server/index.js')],
+    {
+      detached: true,
+      stdio: ['ignore', out, err],
+      env: process.env
+    }
+  )
+
+  serverProcess.unref()
+
+  core.info(`${TURBO_LOCAL_SERVER_PID}: ${serverProcess.pid}`)
+  core.saveState(TURBO_LOCAL_SERVER_PID, serverProcess.pid)
+
+  await waitOn({
+    resources: [`http-get://localhost:${serverPort}`],
+    timeout: 10000
+  })
+  core.info('Turbo cache server is up and running.')
+}
+
+// eslint-disable-next-line github/no-then
+run().catch(error => {
+  if (error instanceof Error) {
+    core.setFailed(error.message)
+  }
+})

@@ -85069,6 +85069,12 @@ const handleAsync = (handler) => {
         return handler(req, res, next).catch(next);
     });
 };
+const getCacheConfig = (artifactId) => {
+    return {
+        cacheKey: `${settings_1.cacheItemPrefix}${artifactId}`,
+        filePath: path_1.default.join(settings_1.cacheDir, `${artifactId}.gz`)
+    };
+};
 function startServer() {
     return __awaiter(this, void 0, void 0, function* () {
         fs_extra_1.default.ensureDirSync(settings_1.cacheDir);
@@ -85090,14 +85096,14 @@ function startServer() {
         });
         app.get('/v8/artifacts/:artifactId', handleAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
             const { artifactId } = req.params;
-            const filePath = path_1.default.join(settings_1.cacheDir, `${artifactId}.gz`);
+            const { cacheKey, filePath } = getCacheConfig(artifactId);
             if (fs_extra_1.default.pathExistsSync(filePath)) {
                 console.log(`Artifact ${artifactId} found locally.`);
             }
             else {
                 console.log(`Artifact ${artifactId} not found locally, checking cache.`);
                 try {
-                    const cacheId = yield (0, cache_1.restoreCache)([filePath], artifactId);
+                    const cacheId = yield (0, cache_1.restoreCache)([filePath], cacheKey);
                     if (!cacheId) {
                         return res.status(404).send('Not found');
                     }
@@ -85118,11 +85124,11 @@ function startServer() {
         })));
         app.put('/v8/artifacts/:artifactId', handleAsync((req, res) => __awaiter(this, void 0, void 0, function* () {
             const artifactId = req.params.artifactId;
-            const filePath = path_1.default.join(settings_1.cacheDir, `${artifactId}.gz`);
+            const { cacheKey, filePath } = getCacheConfig(artifactId);
             const writeStream = fs_extra_1.default.createWriteStream(filePath);
             try {
                 yield (0, promises_1.pipeline)(req, writeStream);
-                yield (0, cache_1.saveCache)([filePath], artifactId);
+                yield (0, cache_1.saveCache)([filePath], cacheKey);
                 return res.send('OK');
             }
             catch (error) {

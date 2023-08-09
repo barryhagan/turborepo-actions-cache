@@ -3,7 +3,7 @@ import * as console from 'console'
 import express, {NextFunction, Request, RequestHandler, Response} from 'express'
 import fs from 'fs-extra'
 import path from 'path'
-import {cacheDir, serverPort} from './settings'
+import {cacheDir, cacheItemPrefix, serverPort} from './settings'
 import {restoreCache, saveCache} from '@actions/cache'
 import {pipeline} from 'stream/promises'
 
@@ -17,6 +17,15 @@ const handleAsync = (handler: AsyncRequestHandler): RequestHandler => {
   return async (req, res, next) => {
     // eslint-disable-next-line github/no-then
     return handler(req, res, next).catch(next)
+  }
+}
+
+const getCacheConfig = (
+  artifactId: string
+): {cacheKey: string; filePath: string} => {
+  return {
+    cacheKey: `${cacheItemPrefix}${artifactId}`,
+    filePath: path.join(cacheDir, `${artifactId}.gz`)
   }
 }
 
@@ -49,14 +58,14 @@ async function startServer(): Promise<void> {
     '/v8/artifacts/:artifactId',
     handleAsync(async (req, res) => {
       const {artifactId} = req.params
-      const filePath = path.join(cacheDir, `${artifactId}.gz`)
+      const {cacheKey, filePath} = getCacheConfig(artifactId)
 
       if (fs.pathExistsSync(filePath)) {
         console.log(`Artifact ${artifactId} found locally.`)
       } else {
         console.log(`Artifact ${artifactId} not found locally, checking cache.`)
         try {
-          const cacheId = await restoreCache([filePath], artifactId)
+          const cacheId = await restoreCache([filePath], cacheKey)
           if (!cacheId) {
             return res.status(404).send('Not found')
           }
@@ -80,13 +89,13 @@ async function startServer(): Promise<void> {
     '/v8/artifacts/:artifactId',
     handleAsync(async (req, res) => {
       const artifactId = req.params.artifactId
-      const filePath = path.join(cacheDir, `${artifactId}.gz`)
+      const {cacheKey, filePath} = getCacheConfig(artifactId)
 
       const writeStream = fs.createWriteStream(filePath)
 
       try {
         await pipeline(req, writeStream)
-        await saveCache([filePath], artifactId)
+        await saveCache([filePath], cacheKey)
         return res.send('OK')
       } catch (error) {
         console.error(error)

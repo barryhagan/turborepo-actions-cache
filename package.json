@@ -36,7 +36,7 @@
     "@types/fs-extra": "11.0.1",
     "@types/node": "^16.18.40",
     "@types/wait-on": "^5.3.1",
-    "@typescript-eslint/parser": "^6.3.0",
+    "@typescript-eslint/parser": "^6.4.0",
     "@vercel/ncc": "^0.36.1",
     "eslint": "^8.46.0",
     "eslint-plugin-github": "^4.9.2",
